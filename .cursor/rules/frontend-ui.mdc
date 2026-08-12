@@ -1,0 +1,13 @@
+---
+description: Dashboard UI standards — avoid generic AI look
+globs: "**/*.{tsx,css}"
+alwaysApply: false
+---
+
+# Frontend UI
+
+- Use shadcn/ui with custom design tokens — not the default theme
+- 4px spacing grid, 13–14px body text, 2–4px border radius
+- No gradient heroes, no rounded-2xl cards, no decorative shadows
+- Density over whitespace — operational cockpit, not marketing page
+- Match existing patterns in `frontend/components/` when that directory exists

@@ -1,0 +1,12 @@
+---
+description: Agent pipeline and HITL constraints
+alwaysApply: true
+---
+
+# Agent Workflow Rules
+
+- Orchestrator routes to sub-agents — sub-agents never call each other directly
+- Approval gates use LangGraph interrupt — never bypass (see ADR-0003)
+- Request Events are append-only — never mutate past events
+- Phase 1 uses mock pipeline only — no real Power BI MCP until Phase 2 issue exists
+- Use domain terms from `CONTEXT.md` in code and APIs

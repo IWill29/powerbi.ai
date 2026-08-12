@@ -1,0 +1,12 @@
+---
+description: FastAPI and Python backend conventions
+globs: "backend/**/*.py"
+alwaysApply: false
+---
+
+# Backend API
+
+- Use Pydantic models for request/response schemas
+- Domain terms from `CONTEXT.md` in API field names and docstrings
+- Append-only Request Events — no update or delete endpoints for events
+- Approval endpoints must record reviewer identity and timestamp

@@ -1,0 +1,15 @@
+---
+description: Git branching and PR rules for AI agents
+alwaysApply: true
+---
+
+# Git and PR Rules
+
+Read `docs/agents/git-workflow.md` before branching or opening PRs.
+
+- Branch format: `feat/<issue>-<description>`
+- One issue per branch; one focused change set per PR
+- Target PR size: under 400 lines; split larger work into stacked PRs
+- PR must link to issue: `Closes #N`
+- Never force-push to main, never auto-merge, never skip hooks without user approval
+- Do not commit unless user explicitly asks

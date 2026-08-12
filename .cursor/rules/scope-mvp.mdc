@@ -1,0 +1,23 @@
+---
+description: MVP scope boundaries — prevent scope creep
+alwaysApply: true
+---
+
+# MVP Scope Control
+
+Before implementing anything:
+
+1. Confirm it is listed in `docs/spec/mvp-scope.md`
+2. Confirm it is NOT in `docs/spec/out-of-scope.md`
+3. Confirm there is an open issue for it
+
+If unclear, ask the user — do not assume.
+
+## Do not
+
+- Add features not in the current issue
+- Add dependencies without user approval
+- Create new top-level directories without asking
+- Implement Phase 2 items (Power BI generation, auth, multi-tenant)
+- Refactor unrelated files "while you are here"
+- Create commits or PRs unless the user explicitly asks
