@@ -1,10 +1,16 @@
-import { PlaceholderView } from "@/components/placeholder-view";
-
-export default function RequestsPage() {
-  return (
-    <PlaceholderView
-      title="Requests"
-      description="Track and manage Power BI solution Requests from intake through delivery."
-    />
-  );
-}
+import { RequestsTable } from "@/components/dashboard-overview";
+import { getRequestsData } from "@/lib/data";
+
+export default async function RequestsPage() {
+  const requests = await getRequestsData();
+
+  return (
+    <div className="dashboard-enter flex flex-1 flex-col gap-2.5 p-3">
+      <RequestsTable
+        requests={requests}
+        title="All Requests"
+        animateRows
+      />
+    </div>
+  );
+}
