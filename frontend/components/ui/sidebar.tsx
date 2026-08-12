@@ -486,6 +486,7 @@ function SidebarRail({ className, ...props }: React.ComponentProps<"button">) {
 
   return (
     <button
+      type="button"
       data-sidebar="rail"
       data-slot="sidebar-rail"
       data-resizing={isResizing ? "" : undefined}
@@ -820,10 +821,14 @@ function SidebarMenuSkeleton({
 }: React.ComponentProps<"div"> & {
   showIcon?: boolean
 }) {
-  // Random width between 50 to 90%.
-  const [width] = React.useState(() => {
-    return `${Math.floor(Math.random() * 40) + 50}%`
-  })
+  const id = React.useId()
+  const width = React.useMemo(() => {
+    let hash = 0
+    for (let i = 0; i < id.length; i++) {
+      hash = (hash + id.charCodeAt(i)) % 40
+    }
+    return `${hash + 50}%`
+  }, [id])
 
   return (
     <div
