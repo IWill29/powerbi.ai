@@ -1,4 +1,4 @@
-"""Application settings loaded from environment variables."""
+﻿"""Application settings loaded from environment variables."""
 
 from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -14,11 +14,11 @@ class Settings(BaseSettings):
     )
 
     database_url: str = (
-        "postgresql://powerbi_agent:powerbi_agent@localhost:5432/powerbi_agent"
+        "postgresql://powerbi_agent:powerbi_agent@localhost:5433/powerbi_agent"
     )
     api_host: str = "0.0.0.0"
     api_port: int = 8000
-    cors_origins: list[str] = ["http://localhost:3000"]
+    cors_origins: list[str] = ["http://localhost:3000", "http://localhost:3001"]
 
     @field_validator("cors_origins", mode="before")
     @classmethod
