@@ -1,5 +1,5 @@
 ---
-description: Git branching and PR rules for AI agents
+description: Git branching and PR rules for AI agents — always branch, never commit to main
 alwaysApply: true
 ---
 
@@ -7,9 +7,58 @@ alwaysApply: true
 
 Read `docs/agents/git-workflow.md` before branching or opening PRs.
 
-- Branch format: `feat/<issue>-<description>`
-- One issue per branch; one focused change set per PR
-- Target PR size: under 400 lines; split larger work into stacked PRs
-- PR must link to issue: `Closes #N`
-- Never force-push to main, never auto-merge, never skip hooks without user approval
-- Do not commit unless user explicitly asks
+**All feature and UI work happens on branches — never direct commits to `main`.**
+
+## Mandatory workflow
+
+1. **Before any UI or feature work** — confirm an open GitHub issue exists (or ask the user to create one); verify MVP scope per `scope-mvp.mdc`
+2. **Create a branch from latest `main`** — `git fetch origin && git checkout main && git pull origin main`, then `git checkout -b <type>/<issue>-<description>`
+3. **Work on that branch only** — one issue, one focused change set per branch
+4. **Commit and open PR only when the user explicitly asks** — do not surprise-commit or auto-open PRs
+
+## Branch rules
+
+| Rule | Detail |
+|------|--------|
+| Branch format | `<type>/<issue>-<description>` (e.g. `feat/12-request-intake-form`) |
+| Types | `feat/`, `fix/`, `docs/`, `test/`, `refactor/`, `chore/` — see git-workflow.md |
+| Scope | One issue per branch; one focused change set per PR |
+| UI redesigns | Large UI changes (including redesigns in progress) get their own branch when the user asks to commit (e.g. `feat/NN-ui-redesign`) |
+| Never on main | Do not commit feature or UI work directly to `main` |
+
+## PR size
+
+| Size | Lines changed | Action |
+|------|---------------|--------|
+| Ideal | < 400 | Open PR |
+| Large | 400–800 | Split if possible |
+| Too large | > 800 | Must split into stacked PRs — see git-workflow.md |
+
+PR must link to issue: `Closes #N`
+
+## Agent checklist — before starting work
+
+- [ ] Open GitHub issue exists and is in MVP scope (`docs/spec/mvp-scope.md`)
+- [ ] Issue is NOT in `docs/spec/out-of-scope.md`
+- [ ] On latest `main` (fetched and pulled)
+- [ ] Feature branch created: `<type>/<issue>-<description>`
+- [ ] Not editing on `main` for feature/UI changes
+
+## Agent checklist — before commit/PR (user must ask first)
+
+- [ ] User explicitly requested commit and/or PR
+- [ ] Branch name follows convention
+- [ ] Single issue scope; no unrelated refactors or out-of-scope files
+- [ ] Diff under ~400 lines (or work split into stacked PRs)
+- [ ] PR description has summary, `Closes #N`, and test plan
+- [ ] No secrets, `.env`, or credentials in the diff
+
+## Do not
+
+- Commit feature work directly to `main`
+- Force-push to `main` or `master`
+- Auto-merge PRs
+- Skip hooks (`--no-verify`) without user approval
+- Commit or open PR without explicit user request
+- Mix multiple issues in one branch or PR
+- Refactor unrelated code "while you are here"
