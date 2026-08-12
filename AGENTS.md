@@ -19,6 +19,10 @@ Instructions for AI agents (Cursor, Copilot, etc.) working in this repository.
 - **Database:** PostgreSQL
 - **Power BI output:** PBIP format only; real generation is Phase 2 — see ADR-0004
 
+## Branch and PR workflow (mandatory)
+
+All feature and UI work must happen on issue-scoped branches — never direct commits to `main`. Before starting: confirm or create a GitHub issue, branch from `main` using `<type>/<issue>-<description>`. Keep PRs under ~400 lines; split larger work into stacked PRs. Commits and PRs only when the user explicitly asks. Full rules: `.cursor/rules/git-pr-workflow.mdc` and `docs/agents/git-workflow.md`.
+
 ## Workflow rules
 
 - Every feature starts from an issue — do not implement unrequested features.

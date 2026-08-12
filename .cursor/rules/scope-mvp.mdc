@@ -10,6 +10,7 @@ Before implementing anything:
 1. Confirm it is listed in `docs/spec/mvp-scope.md`
 2. Confirm it is NOT in `docs/spec/out-of-scope.md`
 3. Confirm there is an open issue for it
+4. Create or switch to a feature branch from `main` — see `git-pr-workflow.mdc`
 
 If unclear, ask the user — do not assume.
 

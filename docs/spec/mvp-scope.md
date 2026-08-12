@@ -4,17 +4,17 @@
 
 Build these for the MVP dashboard and mock agent pipeline:
 
-- [ ] Request intake form (title, description, client reference)
-- [ ] Request list view with status filters
-- [ ] Request detail view with metadata
-- [ ] Agent activity timeline (real-time events via WebSocket or SSE)
-- [ ] Approval inbox (approve / reject / request info)
-- [ ] Mock agent pipeline (simulated orchestrator steps)
-- [ ] PostgreSQL schema: `requests`, `request_events`, `approvals`, `agent_runs`
-- [ ] FastAPI backend with REST API
-- [ ] Next.js frontend dashboard
-- [ ] Langfuse trace integration (basic)
-- [ ] Project documentation and Cursor rules (this repo scaffold)
+- [x] Request intake form (title, description, client reference)
+- [x] Request list view with status filters
+- [x] Request detail view with metadata
+- [x] Agent activity timeline (real-time events via WebSocket or SSE)
+- [x] Approval inbox (approve / reject / request info)
+- [x] Mock agent pipeline (simulated orchestrator steps)
+- [x] PostgreSQL schema: `requests`, `request_events`, `approvals`, `agent_runs`
+- [x] FastAPI backend with REST API
+- [x] Next.js frontend dashboard
+- [x] Langfuse trace integration (basic)
+- [x] Project documentation and Cursor rules (this repo scaffold)
 
 ## Phase 2 — Not MVP (do not build until explicitly requested)
 

@@ -1,0 +1,23 @@
+---
+description: Only implement what the user explicitly requests — no unsolicited code or scope expansion
+alwaysApply: true
+---
+
+# Follow User Requests Only
+
+## Do NOT implement without explicit request
+
+Do NOT implement features, UI changes, or scope expansion unless the user explicitly requests it in the **current message**.
+
+- Recommendations and docs are OK when asked; **code changes only when the user asks to implement**
+- Do not add "helpful" extras (spec cards, mock business fields, pitch copy) without explicit approval
+- When the user asks for advice, research, or a report only — deliver text/docs, **no code**
+- Minimize scope; if unclear, **ask before coding**
+
+## Examples
+
+| User says | Do | Do not |
+|-----------|-----|--------|
+| "Write a pitch doc" | Create/update markdown in `docs/` | Add UI cards or mock spec data |
+| "How should we structure approvals?" | Explain in text | Build a new approvals component |
+| "Revert the spec card" | Revert the code | Also refactor unrelated files |
