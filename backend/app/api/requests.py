@@ -112,7 +112,8 @@ async def create_request(
     db.commit()
     db.refresh(request)
 
-    asyncio.create_task(start_pipeline(request_id))
+    pipeline_task = asyncio.create_task(start_pipeline(request_id))
+    pipeline_task.add_done_callback(lambda _task: None)
 
     return RequestDetail(
         **_to_summary(request).model_dump(),
