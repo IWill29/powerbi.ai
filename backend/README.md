@@ -30,6 +30,14 @@ pip install -e .
 cp ../.env.example ../.env
 ```
 
+## Run migrations
+
+From `backend/` with venv active:
+
+```bash
+alembic upgrade head
+```
+
 ## Run
 
 From `backend/` with the virtual environment active:
@@ -57,3 +65,6 @@ Copy `.env.example` from the repo root to `.env` and adjust if needed. Key varia
 | `API_HOST` | Bind host (default `0.0.0.0`) |
 | `API_PORT` | Bind port (default `8000`) |
 | `CORS_ORIGINS` | Comma-separated allowed origins (default `http://localhost:3000`) |
+| `SEED_ON_STARTUP` | Seed demo Requests on startup (default `true`) |
+| `LANGFUSE_PUBLIC_KEY` | Optional Langfuse public key |
+| `LANGFUSE_SECRET_KEY` | Optional Langfuse secret key |
