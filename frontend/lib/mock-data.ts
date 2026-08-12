@@ -260,6 +260,39 @@ export type ApprovalGateDetail = {
 
 
 
+
+function mockEvent(
+  id: string,
+  requestId: string,
+  message: string,
+  timestamp: string,
+  kind: RequestEvent["kind"]
+): RequestEvent {
+  return { id, requestId, message, timestamp, kind };
+}
+
+const PIPELINE_GATE1_CURRENT: PipelineStep[] = [
+  { label: "Gate 1", status: "current" },
+  { label: "Build", status: "pending" },
+  { label: "Validate", status: "pending" },
+  { label: "Gate 2", status: "pending" },
+];
+
+const PIPELINE_GATE1_DONE: PipelineStep[] = [
+  { label: "Gate 1", status: "done" },
+  { label: "Build", status: "pending" },
+  { label: "Validate", status: "pending" },
+  { label: "Gate 2", status: "pending" },
+];
+
+const PIPELINE_GATE2_CURRENT: PipelineStep[] = [
+  { label: "Gate 1", status: "done" },
+  { label: "Build", status: "done" },
+  { label: "Validate", status: "done" },
+  { label: "Gate 2", status: "current" },
+];
+
+
 export const dashboardStats = {
 
   activeRequests: 12,
@@ -565,455 +598,59 @@ export const recentRequests = allRequests.slice(0, 5);
 
 
 export const requestEvents: RequestEvent[] = [
-
-  // REQ-1042 — full lifecycle through Gate 2
-
-  {
-
-    id: "EVT-4410",
-
-    requestId: "REQ-1042",
-
-    message: "Validation sub-agent passed Solution checks",
-
-    timestamp: "2m ago",
-
-    kind: "agent",
-
-  },
-
-  {
-
-    id: "EVT-4409",
-
-    requestId: "REQ-1042",
-
-    message: "Approval Gate 2 opened — awaiting Reviewer (pre-delivery)",
-
-    timestamp: "4m ago",
-
-    kind: "gate",
-
-  },
-
-  {
-
-    id: "EVT-4408",
-
-    requestId: "REQ-1042",
-
-    message: "Code-review sub-agent completed PBIP structure review",
-
-    timestamp: "8m ago",
-
-    kind: "agent",
-
-  },
-
-  {
-
-    id: "EVT-4407a",
-
-    requestId: "REQ-1042",
-
-    message: "Build sub-agent generated mock Solution layout (3 pages)",
-
-    timestamp: "15m ago",
-
-    kind: "agent",
-
-  },
-
-  {
-
-    id: "EVT-4407b",
-
-    requestId: "REQ-1042",
-
-    message: "Approval Gate 1 approved by Reviewer — build phase started",
-
-    timestamp: "22m ago",
-
-    kind: "gate",
-
-  },
-
-  {
-
-    id: "EVT-4407c",
-
-    requestId: "REQ-1042",
-
-    message: "Approval Gate 1 opened — requirements evidence pack ready",
-
-    timestamp: "28m ago",
-
-    kind: "gate",
-
-  },
-
-  {
-
-    id: "EVT-4407d",
-
-    requestId: "REQ-1042",
-
-    message:
-
-      "Requirements sub-agent mapped BC entities: Sales Invoice Header, Customer, Dimension Set Entry",
-
-    timestamp: "32m ago",
-
-    kind: "agent",
-
-  },
-
-  {
-
-    id: "EVT-4407e",
-
-    requestId: "REQ-1042",
-
-    message: "Agent Run RUN-8821 started (Mock Pipeline)",
-
-    timestamp: "38m ago",
-
-    kind: "system",
-
-  },
-
-  {
-
-    id: "EVT-4407f",
-
-    requestId: "REQ-1042",
-
-    message: "Request created — Intake phase started",
-
-    timestamp: "45m ago",
-
-    kind: "system",
-
-  },
+  // REQ-1042
+  mockEvent("EVT-4410", "REQ-1042", "Validation sub-agent passed Solution checks", "2m ago", "agent"),
+  mockEvent("EVT-4409", "REQ-1042", "Approval Gate 2 opened — awaiting Reviewer (pre-delivery)", "4m ago", "gate"),
+  mockEvent("EVT-4408", "REQ-1042", "Code-review sub-agent completed PBIP structure review", "8m ago", "agent"),
+  mockEvent("EVT-4407a", "REQ-1042", "Build sub-agent generated mock Solution layout (3 pages)", "15m ago", "agent"),
+  mockEvent("EVT-4407b", "REQ-1042", "Approval Gate 1 approved by Reviewer — build phase started", "22m ago", "gate"),
+  mockEvent("EVT-4407c", "REQ-1042", "Approval Gate 1 opened — requirements evidence pack ready", "28m ago", "gate"),
+  mockEvent("EVT-4407d", "REQ-1042", "Requirements sub-agent mapped BC entities: Sales Invoice Header, Customer, Dimension Set Entry", "32m ago", "agent"),
+  mockEvent("EVT-4407e", "REQ-1042", "Agent Run RUN-8821 started (Mock Pipeline)", "38m ago", "system"),
+  mockEvent("EVT-4407f", "REQ-1042", "Request created — Intake phase started", "45m ago", "system"),
 
   // REQ-1041
-
-  {
-
-    id: "EVT-4406",
-
-    requestId: "REQ-1041",
-
-    message: "Requirements sub-agent completed intake analysis",
-
-    timestamp: "12m ago",
-
-    kind: "agent",
-
-  },
-
-  {
-
-    id: "EVT-4405",
-
-    requestId: "REQ-1041",
-
-    message: "Agent Run RUN-8819 started (Mock Pipeline)",
-
-    timestamp: "18m ago",
-
-    kind: "system",
-
-  },
-
-  {
-
-    id: "EVT-4405a",
-
-    requestId: "REQ-1041",
-
-    message: "Request created — Intake phase started",
-
-    timestamp: "25m ago",
-
-    kind: "system",
-
-  },
+  mockEvent("EVT-4406", "REQ-1041", "Requirements sub-agent completed intake analysis", "12m ago", "agent"),
+  mockEvent("EVT-4405", "REQ-1041", "Agent Run RUN-8819 started (Mock Pipeline)", "18m ago", "system"),
+  mockEvent("EVT-4405a", "REQ-1041", "Request created — Intake phase started", "25m ago", "system"),
 
   // REQ-1040
-
-  {
-
-    id: "EVT-4404",
-
-    requestId: "REQ-1040",
-
-    message: "Requirements sub-agent mapped BC warehouse entities",
-
-    timestamp: "35m ago",
-
-    kind: "agent",
-
-  },
-
-  {
-
-    id: "EVT-4403",
-
-    requestId: "REQ-1040",
-
-    message: "Agent Run RUN-8817 started (Mock Pipeline)",
-
-    timestamp: "42m ago",
-
-    kind: "system",
-
-  },
+  mockEvent("EVT-4404", "REQ-1040", "Requirements sub-agent mapped BC warehouse entities", "35m ago", "agent"),
+  mockEvent("EVT-4403", "REQ-1040", "Agent Run RUN-8817 started (Mock Pipeline)", "42m ago", "system"),
 
   // REQ-1039
-
-  {
-
-    id: "EVT-4402",
-
-    requestId: "REQ-1039",
-
-    message: "Solution approved and marked Delivered",
-
-    timestamp: "1h ago",
-
-    kind: "gate",
-
-  },
-
-  {
-
-    id: "EVT-4401",
-
-    requestId: "REQ-1039",
-
-    message: "Validation sub-agent passed Solution checks",
-
-    timestamp: "1h ago",
-
-    kind: "agent",
-
-  },
-
-  {
-
-    id: "EVT-4400",
-
-    requestId: "REQ-1039",
-
-    message: "Approval Gate 2 approved by Reviewer",
-
-    timestamp: "1h ago",
-
-    kind: "gate",
-
-  },
+  mockEvent("EVT-4402", "REQ-1039", "Solution approved and marked Delivered", "1h ago", "gate"),
+  mockEvent("EVT-4401", "REQ-1039", "Validation sub-agent passed Solution checks", "1h ago", "agent"),
+  mockEvent("EVT-4400", "REQ-1039", "Approval Gate 2 approved by Reviewer", "1h ago", "gate"),
 
   // REQ-1038
-
-  {
-
-    id: "EVT-4399",
-
-    requestId: "REQ-1038",
-
-    message: "Request created — Intake phase started",
-
-    timestamp: "3h ago",
-
-    kind: "system",
-
-  },
+  mockEvent("EVT-4399", "REQ-1038", "Request created — Intake phase started", "3h ago", "system"),
 
   // REQ-1037
+  mockEvent("EVT-4398", "REQ-1037", "Solution approved and marked Delivered", "4h ago", "gate"),
 
-  {
-
-    id: "EVT-4398",
-
-    requestId: "REQ-1037",
-
-    message: "Solution approved and marked Delivered",
-
-    timestamp: "4h ago",
-
-    kind: "gate",
-
-  },
-
-  // REQ-1036 — Gate 1 pending
-
-  {
-
-    id: "EVT-4397",
-
-    requestId: "REQ-1036",
-
-    message: "Approval Gate 1 opened — requirements evidence pack ready",
-
-    timestamp: "5h ago",
-
-    kind: "gate",
-
-  },
-
-  {
-
-    id: "EVT-4396",
-
-    requestId: "REQ-1036",
-
-    message:
-
-      "Requirements sub-agent identified Purchase Header/Line and Vendor tables",
-
-    timestamp: "5h ago",
-
-    kind: "agent",
-
-  },
-
-  {
-
-    id: "EVT-4396a",
-
-    requestId: "REQ-1036",
-
-    message: "Agent Run RUN-8804 started (Mock Pipeline)",
-
-    timestamp: "5h ago",
-
-    kind: "system",
-
-  },
+  // REQ-1036
+  mockEvent("EVT-4397", "REQ-1036", "Approval Gate 1 opened — requirements evidence pack ready", "5h ago", "gate"),
+  mockEvent("EVT-4396", "REQ-1036", "Requirements sub-agent identified Purchase Header/Line and Vendor tables", "5h ago", "agent"),
+  mockEvent("EVT-4396a", "REQ-1036", "Agent Run RUN-8804 started (Mock Pipeline)", "5h ago", "system"),
 
   // REQ-1035
-
-  {
-
-    id: "EVT-4395",
-
-    requestId: "REQ-1035",
-
-    message: "Solution approved and marked Delivered",
-
-    timestamp: "6h ago",
-
-    kind: "gate",
-
-  },
+  mockEvent("EVT-4395", "REQ-1035", "Solution approved and marked Delivered", "6h ago", "gate"),
 
   // REQ-1034
+  mockEvent("EVT-4394", "REQ-1034", "Request created — Intake phase started", "8h ago", "system"),
 
-  {
-
-    id: "EVT-4394",
-
-    requestId: "REQ-1034",
-
-    message: "Request created — Intake phase started",
-
-    timestamp: "8h ago",
-
-    kind: "system",
-
-  },
-
-  // REQ-1033 — Gate 2 pending
-
-  {
-
-    id: "EVT-4393",
-
-    requestId: "REQ-1033",
-
-    message: "Approval Gate 2 opened — awaiting Reviewer (pre-delivery)",
-
-    timestamp: "10h ago",
-
-    kind: "gate",
-
-  },
-
-  {
-
-    id: "EVT-4392",
-
-    requestId: "REQ-1033",
-
-    message: "Code-review sub-agent completed PBIP structure review",
-
-    timestamp: "10h ago",
-
-    kind: "agent",
-
-  },
-
-  {
-
-    id: "EVT-4392a",
-
-    requestId: "REQ-1033",
-
-    message: "Validation sub-agent passed Solution checks",
-
-    timestamp: "10h ago",
-
-    kind: "agent",
-
-  },
-
-  {
-
-    id: "EVT-4392b",
-
-    requestId: "REQ-1033",
-
-    message: "Approval Gate 1 approved by Reviewer — build phase started",
-
-    timestamp: "11h ago",
-
-    kind: "gate",
-
-  },
+  // REQ-1033
+  mockEvent("EVT-4393", "REQ-1033", "Approval Gate 2 opened — awaiting Reviewer (pre-delivery)", "10h ago", "gate"),
+  mockEvent("EVT-4392", "REQ-1033", "Code-review sub-agent completed PBIP structure review", "10h ago", "agent"),
+  mockEvent("EVT-4392a", "REQ-1033", "Validation sub-agent passed Solution checks", "10h ago", "agent"),
+  mockEvent("EVT-4392b", "REQ-1033", "Approval Gate 1 approved by Reviewer — build phase started", "11h ago", "gate"),
 
   // REQ-1032
-
-  {
-
-    id: "EVT-4391",
-
-    requestId: "REQ-1032",
-
-    message: "Agent Run RUN-8792 started (Mock Pipeline)",
-
-    timestamp: "12h ago",
-
-    kind: "system",
-
-  },
+  mockEvent("EVT-4391", "REQ-1032", "Agent Run RUN-8792 started (Mock Pipeline)", "12h ago", "system"),
 
   // REQ-1031
-
-  {
-
-    id: "EVT-4390",
-
-    requestId: "REQ-1031",
-
-    message: "Solution approved and marked Delivered",
-
-    timestamp: "1d ago",
-
-    kind: "gate",
-
-  },
-
+  mockEvent("EVT-4390", "REQ-1031", "Solution approved and marked Delivered", "1d ago", "gate"),
 ];
 
 
@@ -1338,17 +975,7 @@ export const req1042Gate1Evidence: ApprovalGateDetail = {
 
   ],
 
-  pipelineSteps: [
-
-    { label: "Gate 1", status: "done" },
-
-    { label: "Build", status: "pending" },
-
-    { label: "Validate", status: "pending" },
-
-    { label: "Gate 2", status: "pending" },
-
-  ],
+  pipelineSteps: PIPELINE_GATE1_DONE,
 
 };
 
@@ -1512,17 +1139,7 @@ export const approvalGateDetails: Record<string, ApprovalGateDetail> = {
 
     ],
 
-    pipelineSteps: [
-
-      { label: "Gate 1", status: "done" },
-
-      { label: "Build", status: "done" },
-
-      { label: "Validate", status: "done" },
-
-      { label: "Gate 2", status: "current" },
-
-    ],
+    pipelineSteps: PIPELINE_GATE2_CURRENT,
 
     evidence: [
 
@@ -1886,17 +1503,7 @@ export const approvalGateDetails: Record<string, ApprovalGateDetail> = {
 
     ],
 
-    pipelineSteps: [
-
-      { label: "Gate 1", status: "current" },
-
-      { label: "Build", status: "pending" },
-
-      { label: "Validate", status: "pending" },
-
-      { label: "Gate 2", status: "pending" },
-
-    ],
+    pipelineSteps: PIPELINE_GATE1_CURRENT,
 
     evidence: [
 
@@ -2158,17 +1765,7 @@ export const approvalGateDetails: Record<string, ApprovalGateDetail> = {
 
     ],
 
-    pipelineSteps: [
-
-      { label: "Gate 1", status: "done" },
-
-      { label: "Build", status: "done" },
-
-      { label: "Validate", status: "done" },
-
-      { label: "Gate 2", status: "current" },
-
-    ],
+    pipelineSteps: PIPELINE_GATE2_CURRENT,
 
     evidence: [
 
