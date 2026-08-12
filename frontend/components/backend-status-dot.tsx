@@ -33,9 +33,11 @@ export function BackendStatusDot({ status, className }: BackendStatusDotProps) {
             connected ? "bg-emerald-500" : "bg-amber-500"
           )}
         />
-        <span className="font-mono uppercase tracking-wide">API</span>
+        <span className="hidden font-mono tabular-nums sm:inline">
+          {connected ? "Live" : "Offline"}
+        </span>
       </TooltipTrigger>
-      <TooltipContent side="bottom">
+      <TooltipContent side="bottom" className="font-mono text-[11px]">
         Backend {connected ? "connected" : "unreachable"}
       </TooltipContent>
     </Tooltip>
