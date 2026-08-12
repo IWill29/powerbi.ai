@@ -18,9 +18,9 @@ const ibmPlexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "AI Power BI Agent Platform",
+  title: "Power BI APS — Operations",
   description:
-    "Dashboard for Request intake, agent activity, and Approval Gates.",
+    "Operations dashboard for Request intake, agent activity, and Approval Gates.",
 };
 
 export default function RootLayout({
@@ -33,7 +33,7 @@ export default function RootLayout({
       lang="en"
       className={`${ibmPlexSans.variable} ${ibmPlexMono.variable} dark h-full`}
     >
-      <body className="flex min-h-full flex-col bg-background text-[13px] leading-5 antialiased">
+      <body className="flex min-h-full flex-col bg-background text-[13px] leading-5 antialiased selection:bg-accent-brand/25 selection:text-foreground">
         <TooltipProvider>{children}</TooltipProvider>
       </body>
     </html>
