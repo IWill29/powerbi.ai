@@ -21,6 +21,7 @@ from app.schemas.request import (
 )
 from app.services.events import create_request_event, subscribe, unsubscribe
 from app.services.ids import next_request_id
+from app.services.pipeline import start_pipeline
 
 router = APIRouter(prefix="/requests", tags=["requests"])
 
@@ -111,6 +112,7 @@ async def create_request(
     db.commit()
     db.refresh(request)
 
+    asyncio.create_task(start_pipeline(request_id))
 
     return RequestDetail(
         **_to_summary(request).model_dump(),
