@@ -314,6 +314,40 @@ function approveWithWarning(
   };
 }
 
+function salesInvoiceEvidence(id: string, detail: string): EvidenceItem {
+  return evidence(id, "dataSource", "Sales Invoice Header / Line", detail);
+}
+
+function gate2CloseTimeline(
+  tl3Time: string,
+  buildDetail: string,
+  tl4Time: string
+): ActivityTimelineItem[] {
+  return [
+    timeline("tl3", tl3Time, "Build agent", "Mock Solution ģenerēts", buildDetail),
+    timeline("tl4", tl4Time, "Orchestrator", "Gate 2 atvērts", "Gaida Reviewer apstiprinājumu pirms piegādes"),
+  ];
+}
+
+const REQ1042_GATE1_EVIDENCE: EvidenceItem[] = [
+  salesInvoiceEvidence("e1", "Galvenais faktu avots — Amount, Quantity, Posting Date"),
+  evidence("e2", "dataSource", "Customer + Dimension Set Entry", "Reģiona dimensija caur Global Dimension 1 Code"),
+  evidence("e3", "kpi", "Neto pārdošanas apjoms (EUR)", "SUM(Amount) WHERE Type = Item, filtrs pēc Posting Date"),
+  evidence("e4", "kpi", "Pārdošanas apjoms pa reģioniem", "Grupēšana pēc reģiona dimensijas, salīdzinājums ar plānu"),
+  evidence("e5", "openQuestion", "Intercompany pārdošana", "Vai izslēgt IC darījumus no KPI? Nav atbildes Gate 1 brīdī."),
+  evidence("e6", "openQuestion", "Valūtas konvertācija", "Posting date vai invoice date kurss? Noklusējums: posting."),
+];
+
+const REQ1042_GATE2_EVIDENCE: EvidenceItem[] = [
+  salesInvoiceEvidence("e1", "Faktu tabula ar Amount, Quantity, Posting Date — relācija uz Customer"),
+  evidence("e2", "dataSource", "Dimension Set Entry", "Global Dimension 1 Code → reģions (Rīga, Kurzeme, Latgale, Vidzeme)"),
+  evidence("e3", "dataSource", "Salesperson/Purchaser", "Pārdevēja dimensija un reģiona fallback 3 legacy klientiem"),
+  evidence("e4", "kpi", "Neto pārdošana (EUR)", "€ 2.41M YTD — salīdzinājums ar plānu +8.2%"),
+  evidence("e5", "kpi", "YoY izaugsme", "+12.4% pret iepriekšējo gadu (tā pati perioda filtrs)"),
+  evidence("e6", "kpi", "Top reģions", "Rīga — 41% no kopējā apjoma"),
+  evidence("e7", "openQuestion", "Intercompany filtrs", "Klienta atbilde nav saņemta — Solution izmanto noklusējumu (iekļaut IC)"),
+];
+
 const PIPELINE_GATE1_CURRENT: PipelineStep[] = [
   { label: "Gate 1", status: "current" },
   { label: "Build", status: "pending" },
@@ -766,21 +800,7 @@ export const req1042Gate1Evidence: ApprovalGateDetail = {
 
   ],
 
-  evidence: [
-
-    evidence("e1", "dataSource", "Sales Invoice Header / Line", "Galvenais faktu avots — Amount, Quantity, Posting Date"),
-
-    evidence("e2", "dataSource", "Customer + Dimension Set Entry", "Reģiona dimensija caur Global Dimension 1 Code"),
-
-    evidence("e3", "kpi", "Neto pārdošanas apjoms (EUR)", "SUM(Amount) WHERE Type = Item, filtrs pēc Posting Date"),
-
-    evidence("e4", "kpi", "Pārdošanas apjoms pa reģioniem", "Grupēšana pēc reģiona dimensijas, salīdzinājums ar plānu"),
-
-    evidence("e5", "openQuestion", "Intercompany pārdošana", "Vai izslēgt IC darījumus no KPI? Nav atbildes Gate 1 brīdī."),
-
-    evidence("e6", "openQuestion", "Valūtas konvertācija", "Posting date vai invoice date kurss? Noklusējums: posting."),
-
-  ],
+  evidence: REQ1042_GATE1_EVIDENCE,
 
   warnings: [
 
@@ -892,31 +912,13 @@ export const approvalGateDetails: Record<string, ApprovalGateDetail> = {
 
       timeline("tl2", "09:42", "Code-review agent", "PBIP struktūras review", "2 labojumi tabulu un dimensiju kartējumā"),
 
-      timeline("tl3", "09:35", "Build agent", "Mock Solution ģenerēts", "3 lappuses, 12 vizualizācijas"),
-
-      timeline("tl4", "09:22", "Orchestrator", "Gate 2 atvērts", "Gaida Reviewer apstiprinājumu pirms piegādes"),
+      ...gate2CloseTimeline("09:35", "3 lappuses, 12 vizualizācijas", "09:22"),
 
     ],
 
     pipelineSteps: PIPELINE_GATE2_CURRENT,
 
-    evidence: [
-
-      evidence("e1", "dataSource", "Sales Invoice Header / Line", "Faktu tabula ar Amount, Quantity, Posting Date — relācija uz Customer"),
-
-      evidence("e2", "dataSource", "Dimension Set Entry", "Global Dimension 1 Code → reģions (Rīga, Kurzeme, Latgale, Vidzeme)"),
-
-      evidence("e3", "dataSource", "Salesperson/Purchaser", "Pārdevēja dimensija un reģiona fallback 3 legacy klientiem"),
-
-      evidence("e4", "kpi", "Neto pārdošana (EUR)", "€ 2.41M YTD — salīdzinājums ar plānu +8.2%"),
-
-      evidence("e5", "kpi", "YoY izaugsme", "+12.4% pret iepriekšējo gadu (tā pati perioda filtrs)"),
-
-      evidence("e6", "kpi", "Top reģions", "Rīga — 41% no kopējā apjoma"),
-
-      evidence("e7", "openQuestion", "Intercompany filtrs", "Klienta atbilde nav saņemta — Solution izmanto noklusējumu (iekļaut IC)"),
-
-    ],
+    evidence: REQ1042_GATE2_EVIDENCE,
 
     warnings: [
 
@@ -1166,17 +1168,7 @@ export const approvalGateDetails: Record<string, ApprovalGateDetail> = {
 
       checklist("vc2", "Plāna datu avots", "pass", "Excel plāns importēts mock modelī — 12 mēneši"),
 
-      {
-
-        id: "vc3",
-
-        label: "GL kontu mapping",
-
-        status: "pass_with_warning",
-
-        detail: 'Konts 6110 pārkartēts no COGS uz Operating Expenses',
-
-      },
+      checklist("vc3", "GL kontu mapping", "pass_with_warning", "Konts 6110 pārkartēts no COGS uz Operating Expenses"),
 
       checklist("vc4", "Variance aprēķini", "pass"),
 
@@ -1188,23 +1180,9 @@ export const approvalGateDetails: Record<string, ApprovalGateDetail> = {
 
       timeline("tl1", "11:52", "Validation agent", "Solution pārbaudes pabeigtas", "Variance loģika un kontu hierarhija validēta"),
 
-      {
+      timeline("tl2", "11:45", "Code-review agent", "PBIP struktūras review", 'GL konts 6110 pārkartēts uz "Operating Expenses"'),
 
-        id: "tl2",
-
-        time: "11:45",
-
-        actor: "Code-review agent",
-
-        event: "PBIP struktūras review",
-
-        detail: 'GL konts 6110 pārkartēts uz "Operating Expenses"',
-
-      },
-
-      timeline("tl3", "11:30", "Build agent", "Mock Solution ģenerēts", "P&L variance panelis ar 12 mēnešu plānu"),
-
-      timeline("tl4", "11:18", "Orchestrator", "Gate 2 atvērts", "Gaida Reviewer apstiprinājumu pirms piegādes"),
+      ...gate2CloseTimeline("11:30", "P&L variance panelis ar 12 mēnešu plānu", "11:18"),
 
     ],
 
