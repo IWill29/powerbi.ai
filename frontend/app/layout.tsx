@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import { IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google";
+
+import { TooltipProvider } from "@/components/ui/tooltip";
+
 import "./globals.css";
 
 const ibmPlexSans = IBM_Plex_Sans({
@@ -26,9 +29,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${ibmPlexSans.variable} ${ibmPlexMono.variable} h-full`}>
-      <body className="min-h-full flex flex-col bg-background text-[13px] leading-5 antialiased">
-        {children}
+    <html
+      lang="en"
+      className={`${ibmPlexSans.variable} ${ibmPlexMono.variable} dark h-full`}
+    >
+      <body className="flex min-h-full flex-col bg-background text-[13px] leading-5 antialiased">
+        <TooltipProvider>{children}</TooltipProvider>
       </body>
     </html>
   );
