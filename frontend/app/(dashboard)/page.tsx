@@ -1,10 +1,8 @@
-﻿import { PlaceholderView } from "@/components/placeholder-view";
+import { getBackendStatus } from "@/lib/backend-status";
+import { DashboardOverview } from "@/components/dashboard-overview";
 
-export default function DashboardPage() {
-  return (
-    <PlaceholderView
-      title="Dashboard"
-      description="Operational overview with mock Request data ships in the following PR."
-    />
-  );
+export default async function DashboardPage() {
+  await getBackendStatus();
+
+  return <DashboardOverview />;
 }
