@@ -271,6 +271,49 @@ function mockEvent(
   return { id, requestId, message, timestamp, kind };
 }
 
+
+function evidence(
+  id: string,
+  category: EvidenceCategory,
+  title: string,
+  detail: string
+): EvidenceItem {
+  return { id, category, title, detail };
+}
+
+function checklist(
+  id: string,
+  label: string,
+  status: ValidationChecklistStatus,
+  detail?: string
+): ValidationChecklistItem {
+  return detail ? { id, label, status, detail } : { id, label, status };
+}
+
+function timeline(
+  id: string,
+  time: string,
+  actor: string,
+  event: string,
+  detail?: string
+): ActivityTimelineItem {
+  return detail ? { id, time, actor, event, detail } : { id, time, actor, event };
+}
+
+function approveWithWarning(
+  summaryText: string,
+  counts: { correctionCount?: number; warningCount?: number } = {}
+): DecisionSummary {
+  return {
+    verdict: "approve_with_warning",
+    verdictLabel: "Apstiprināt ar brīdinājumu",
+    correctionCount: counts.correctionCount ?? 0,
+    warningCount: counts.warningCount ?? 0,
+    blockerCount: 0,
+    summaryText,
+  };
+}
+
 const PIPELINE_GATE1_CURRENT: PipelineStep[] = [
   { label: "Gate 1", status: "current" },
   { label: "Build", status: "pending" },
@@ -725,77 +768,17 @@ export const req1042Gate1Evidence: ApprovalGateDetail = {
 
   evidence: [
 
-    {
+    evidence("e1", "dataSource", "Sales Invoice Header / Line", "Galvenais faktu avots — Amount, Quantity, Posting Date"),
 
-      id: "e1",
+    evidence("e2", "dataSource", "Customer + Dimension Set Entry", "Reģiona dimensija caur Global Dimension 1 Code"),
 
-      category: "dataSource",
+    evidence("e3", "kpi", "Neto pārdošanas apjoms (EUR)", "SUM(Amount) WHERE Type = Item, filtrs pēc Posting Date"),
 
-      title: "Sales Invoice Header / Line",
+    evidence("e4", "kpi", "Pārdošanas apjoms pa reģioniem", "Grupēšana pēc reģiona dimensijas, salīdzinājums ar plānu"),
 
-      detail: "Galvenais faktu avots — Amount, Quantity, Posting Date",
+    evidence("e5", "openQuestion", "Intercompany pārdošana", "Vai izslēgt IC darījumus no KPI? Nav atbildes Gate 1 brīdī."),
 
-    },
-
-    {
-
-      id: "e2",
-
-      category: "dataSource",
-
-      title: "Customer + Dimension Set Entry",
-
-      detail: "Reģiona dimensija caur Global Dimension 1 Code",
-
-    },
-
-    {
-
-      id: "e3",
-
-      category: "kpi",
-
-      title: "Neto pārdošanas apjoms (EUR)",
-
-      detail: "SUM(Amount) WHERE Type = Item, filtrs pēc Posting Date",
-
-    },
-
-    {
-
-      id: "e4",
-
-      category: "kpi",
-
-      title: "Pārdošanas apjoms pa reģioniem",
-
-      detail: "Grupēšana pēc reģiona dimensijas, salīdzinājums ar plānu",
-
-    },
-
-    {
-
-      id: "e5",
-
-      category: "openQuestion",
-
-      title: "Intercompany pārdošana",
-
-      detail: "Vai izslēgt IC darījumus no KPI? Nav atbildes Gate 1 brīdī.",
-
-    },
-
-    {
-
-      id: "e6",
-
-      category: "openQuestion",
-
-      title: "Valūtas konvertācija",
-
-      detail: "Posting date vai invoice date kurss? Noklusējums: posting.",
-
-    },
+    evidence("e6", "openQuestion", "Valūtas konvertācija", "Posting date vai invoice date kurss? Noklusējums: posting."),
 
   ],
 
@@ -835,143 +818,31 @@ export const req1042Gate1Evidence: ApprovalGateDetail = {
 
   },
 
-  decisionSummary: {
-
-    verdict: "approve_with_warning",
-
-    verdictLabel: "Apstiprināt ar brīdinājumu",
-
-    correctionCount: 0,
-
-    warningCount: 1,
-
-    blockerCount: 0,
-
-    summaryText:
-
-      "Prasības ir pietiekami skaidras BC pārdošanas KPI izveidei. Identificēti 4 KPI un 5 datu tabulas. Divi atvērtie jautājumi par intercompany un valūtu nebloķē Gate 1 — ieteicams apstiprināt ar brīdinājumu par reģiona dimensijas fallback.",
-
-  },
+  decisionSummary: approveWithWarning("Prasības ir pietiekami skaidras BC pārdošanas KPI izveidei. Identificēti 4 KPI un 5 datu tabulas. Divi atvērtie jautājumi par intercompany un valūtu nebloķē Gate 1 — ieteicams apstiprināt ar brīdinājumu par reģiona dimensijas fallback.", { warningCount: 1 }),
 
   validationChecklist: [
 
-    {
+    checklist("vc1", "Pieprasījuma apraksts parsēts", "pass"),
 
-      id: "vc1",
+    checklist("vc2", "BC entītijas identificētas", "pass", "Sales Invoice Header/Line, Customer, Dimension Set Entry"),
 
-      label: "Pieprasījuma apraksts parsēts",
+    checklist("vc3", "KPI definīcijas", "pass", "4 KPI ar skaidriem aprēķiniem"),
 
-      status: "pass",
+    checklist("vc4", "Atvērtie jautājumi", "pass_with_warning", "2 jautājumi bez klienta atbildes"),
 
-    },
-
-    {
-
-      id: "vc2",
-
-      label: "BC entītijas identificētas",
-
-      status: "pass",
-
-      detail: "Sales Invoice Header/Line, Customer, Dimension Set Entry",
-
-    },
-
-    {
-
-      id: "vc3",
-
-      label: "KPI definīcijas",
-
-      status: "pass",
-
-      detail: "4 KPI ar skaidriem aprēķiniem",
-
-    },
-
-    {
-
-      id: "vc4",
-
-      label: "Atvērtie jautājumi",
-
-      status: "pass_with_warning",
-
-      detail: "2 jautājumi bez klienta atbildes",
-
-    },
-
-    {
-
-      id: "vc5",
-
-      label: "Datu avotu pieejamība",
-
-      status: "pass_with_warning",
-
-      detail: "Reģiona dimensija nav aizpildīta visiem klientiem",
-
-    },
+    checklist("vc5", "Datu avotu pieejamība", "pass_with_warning", "Reģiona dimensija nav aizpildīta visiem klientiem"),
 
   ],
 
   activityTimeline: [
 
-    {
+    timeline("tl1", "08:12", "Requirements agent", "Intake analīze pabeigta", "Parsēts UPB pieprasījums par reģionu KPI"),
 
-      id: "tl1",
+    timeline("tl2", "08:18", "Requirements agent", "Datu avotu kartēšana", "Identificētas 5 BC tabulas"),
 
-      time: "08:12",
+    timeline("tl3", "08:24", "Requirements agent", "KPI definīcijas sagatavotas", "Neto pārdošana, YoY, reģioni, plāns vs fakts"),
 
-      actor: "Requirements agent",
-
-      event: "Intake analīze pabeigta",
-
-      detail: "Parsēts UPB pieprasījums par reģionu KPI",
-
-    },
-
-    {
-
-      id: "tl2",
-
-      time: "08:18",
-
-      actor: "Requirements agent",
-
-      event: "Datu avotu kartēšana",
-
-      detail: "Identificētas 5 BC tabulas",
-
-    },
-
-    {
-
-      id: "tl3",
-
-      time: "08:24",
-
-      actor: "Requirements agent",
-
-      event: "KPI definīcijas sagatavotas",
-
-      detail: "Neto pārdošana, YoY, reģioni, plāns vs fakts",
-
-    },
-
-    {
-
-      id: "tl4",
-
-      time: "08:28",
-
-      actor: "Orchestrator",
-
-      event: "Gate 1 evidence pack gatavs",
-
-      detail: "Gaida Reviewer apstiprinājumu",
-
-    },
+    timeline("tl4", "08:28", "Orchestrator", "Gate 1 evidence pack gatavs", "Gaida Reviewer apstiprinājumu"),
 
   ],
 
@@ -999,143 +870,31 @@ export const approvalGateDetails: Record<string, ApprovalGateDetail> = {
 
       "Gate 1 apstiprināts pirms 22 min — prasības un KPI definīcijas saskaņotas. Build fāze pabeigta.",
 
-    decisionSummary: {
-
-      verdict: "approve_with_warning",
-
-      verdictLabel: "Apstiprināt ar brīdinājumu",
-
-      correctionCount: 3,
-
-      warningCount: 1,
-
-      blockerCount: 0,
-
-      summaryText:
-
-        "Validation un code-review sub-agenti pabeidza mock Solution pārbaudi. Veikti 3 labojumi BC entītiju kartējumā — KPI loģika nemainās. Vienīgais brīdinājums: 3 legacy klientiem izmantots Salesperson fallback reģionam. Ieteicams apstiprināt piegādei UPB.",
-
-    },
+    decisionSummary: approveWithWarning("Validation un code-review sub-agenti pabeidza mock Solution pārbaudi. Veikti 3 labojumi BC entītiju kartējumā — KPI loģika nemainās. Vienīgais brīdinājums: 3 legacy klientiem izmantots Salesperson fallback reģionam. Ieteicams apstiprināt piegādei UPB.", { correctionCount: 3, warningCount: 1 }),
 
     validationChecklist: [
 
-      {
+      checklist("vc1", "PBIP struktūra", "pass", "3 lappuses, 12 vizualizācijas, relācijas validētas"),
 
-        id: "vc1",
+      checklist("vc2", "KPI loģika", "pass", "DAX mērījumi salīdzināti ar BC lauku definīcijām"),
 
-        label: "PBIP struktūra",
+      checklist("vc3", "Datu avotu kartējums", "pass_with_warning", "3 legacy klienti — reģiona fallback uz Salesperson"),
 
-        status: "pass",
+      checklist("vc4", "Plāna vs. fakta salīdzinājums", "pass"),
 
-        detail: "3 lappuses, 12 vizualizācijas, relācijas validētas",
-
-      },
-
-      {
-
-        id: "vc2",
-
-        label: "KPI loģika",
-
-        status: "pass",
-
-        detail: "DAX mērījumi salīdzināti ar BC lauku definīcijām",
-
-      },
-
-      {
-
-        id: "vc3",
-
-        label: "Datu avotu kartējums",
-
-        status: "pass_with_warning",
-
-        detail: "3 legacy klienti — reģiona fallback uz Salesperson",
-
-      },
-
-      {
-
-        id: "vc4",
-
-        label: "Plāna vs. fakta salīdzinājums",
-
-        status: "pass",
-
-      },
-
-      {
-
-        id: "vc5",
-
-        label: "Valūtas konvertācija",
-
-        status: "pass_with_warning",
-
-        detail: "Posting date kurss — nav klienta apstiprinājuma",
-
-      },
+      checklist("vc5", "Valūtas konvertācija", "pass_with_warning", "Posting date kurss — nav klienta apstiprinājuma"),
 
     ],
 
     activityTimeline: [
 
-      {
+      timeline("tl1", "09:48", "Validation agent", "Solution pārbaudes pabeigtas", "Visi KPI mērījumi atbilst Gate 1 definīcijām"),
 
-        id: "tl1",
+      timeline("tl2", "09:42", "Code-review agent", "PBIP struktūras review", "2 labojumi tabulu un dimensiju kartējumā"),
 
-        time: "09:48",
+      timeline("tl3", "09:35", "Build agent", "Mock Solution ģenerēts", "3 lappuses, 12 vizualizācijas"),
 
-        actor: "Validation agent",
-
-        event: "Solution pārbaudes pabeigtas",
-
-        detail: "Visi KPI mērījumi atbilst Gate 1 definīcijām",
-
-      },
-
-      {
-
-        id: "tl2",
-
-        time: "09:42",
-
-        actor: "Code-review agent",
-
-        event: "PBIP struktūras review",
-
-        detail: "2 labojumi tabulu un dimensiju kartējumā",
-
-      },
-
-      {
-
-        id: "tl3",
-
-        time: "09:35",
-
-        actor: "Build agent",
-
-        event: "Mock Solution ģenerēts",
-
-        detail: "3 lappuses, 12 vizualizācijas",
-
-      },
-
-      {
-
-        id: "tl4",
-
-        time: "09:22",
-
-        actor: "Orchestrator",
-
-        event: "Gate 2 atvērts",
-
-        detail: "Gaida Reviewer apstiprinājumu pirms piegādes",
-
-      },
+      timeline("tl4", "09:22", "Orchestrator", "Gate 2 atvērts", "Gaida Reviewer apstiprinājumu pirms piegādes"),
 
     ],
 
@@ -1143,93 +902,19 @@ export const approvalGateDetails: Record<string, ApprovalGateDetail> = {
 
     evidence: [
 
-      {
+      evidence("e1", "dataSource", "Sales Invoice Header / Line", "Faktu tabula ar Amount, Quantity, Posting Date — relācija uz Customer"),
 
-        id: "e1",
+      evidence("e2", "dataSource", "Dimension Set Entry", "Global Dimension 1 Code → reģions (Rīga, Kurzeme, Latgale, Vidzeme)"),
 
-        category: "dataSource",
+      evidence("e3", "dataSource", "Salesperson/Purchaser", "Pārdevēja dimensija un reģiona fallback 3 legacy klientiem"),
 
-        title: "Sales Invoice Header / Line",
+      evidence("e4", "kpi", "Neto pārdošana (EUR)", "€ 2.41M YTD — salīdzinājums ar plānu +8.2%"),
 
-        detail:
+      evidence("e5", "kpi", "YoY izaugsme", "+12.4% pret iepriekšējo gadu (tā pati perioda filtrs)"),
 
-          "Faktu tabula ar Amount, Quantity, Posting Date — relācija uz Customer",
+      evidence("e6", "kpi", "Top reģions", "Rīga — 41% no kopējā apjoma"),
 
-      },
-
-      {
-
-        id: "e2",
-
-        category: "dataSource",
-
-        title: "Dimension Set Entry",
-
-        detail: "Global Dimension 1 Code → reģions (Rīga, Kurzeme, Latgale, Vidzeme)",
-
-      },
-
-      {
-
-        id: "e3",
-
-        category: "dataSource",
-
-        title: "Salesperson/Purchaser",
-
-        detail: "Pārdevēja dimensija un reģiona fallback 3 legacy klientiem",
-
-      },
-
-      {
-
-        id: "e4",
-
-        category: "kpi",
-
-        title: "Neto pārdošana (EUR)",
-
-        detail: "€ 2.41M YTD — salīdzinājums ar plānu +8.2%",
-
-      },
-
-      {
-
-        id: "e5",
-
-        category: "kpi",
-
-        title: "YoY izaugsme",
-
-        detail: "+12.4% pret iepriekšējo gadu (tā pati perioda filtrs)",
-
-      },
-
-      {
-
-        id: "e6",
-
-        category: "kpi",
-
-        title: "Top reģions",
-
-        detail: "Rīga — 41% no kopējā apjoma",
-
-      },
-
-      {
-
-        id: "e7",
-
-        category: "openQuestion",
-
-        title: "Intercompany filtrs",
-
-        detail:
-
-          "Klienta atbilde nav saņemta — Solution izmanto noklusējumu (iekļaut IC)",
-
-      },
+      evidence("e7", "openQuestion", "Intercompany filtrs", "Klienta atbilde nav saņemta — Solution izmanto noklusējumu (iekļaut IC)"),
 
     ],
 
@@ -1375,131 +1060,29 @@ export const approvalGateDetails: Record<string, ApprovalGateDetail> = {
 
       "Requirements sub-agent identificēja BC pirkumu entītijas piegādātāju snieguma KPI. Ieteikti 4 galvenie rādītāji: piegādes precizitāte, kavējumi, kvalitātes atteikumi un vidējais lead time.",
 
-    decisionSummary: {
-
-      verdict: "approve_with_warning",
-
-      verdictLabel: "Apstiprināt ar brīdinājumu",
-
-      correctionCount: 0,
-
-      warningCount: 0,
-
-      blockerCount: 0,
-
-      summaryText:
-
-        "Prasības par piegādātāju snieguma KPI ir skaidras un realizējamas no BC pirkumu datiem. Identificēti 4 KPI un 4 datu tabulas. Viens atvērts jautājums par kvalitātes atteikumu avotu nebloķē Gate 1 — ieteicams apstiprināt un sākt build fāzi.",
-
-    },
+    decisionSummary: approveWithWarning("Prasības par piegādātāju snieguma KPI ir skaidras un realizējamas no BC pirkumu datiem. Identificēti 4 KPI un 4 datu tabulas. Viens atvērts jautājums par kvalitātes atteikumu avotu nebloķē Gate 1 — ieteicams apstiprināt un sākt build fāzi."),
 
     validationChecklist: [
 
-      {
+      checklist("vc1", "Pieprasījuma apraksts parsēts", "pass"),
 
-        id: "vc1",
+      checklist("vc2", "BC entītiju kartēšana", "pass", "Purchase Header/Line, Vendor, Warehouse Receipt"),
 
-        label: "Pieprasījuma apraksts parsēts",
+      checklist("vc3", "KPI definīcijas", "pass", "OTIF, lead time, rejection rate, spend by vendor"),
 
-        status: "pass",
-
-      },
-
-      {
-
-        id: "vc2",
-
-        label: "BC entītiju kartēšana",
-
-        status: "pass",
-
-        detail: "Purchase Header/Line, Vendor, Warehouse Receipt",
-
-      },
-
-      {
-
-        id: "vc3",
-
-        label: "KPI definīcijas",
-
-        status: "pass",
-
-        detail: "OTIF, lead time, rejection rate, spend by vendor",
-
-      },
-
-      {
-
-        id: "vc4",
-
-        label: "Atvērtie jautājumi",
-
-        status: "pass_with_warning",
-
-        detail: "Kvalitātes atteikumu avots nav precizēts",
-
-      },
+      checklist("vc4", "Atvērtie jautājumi", "pass_with_warning", "Kvalitātes atteikumu avots nav precizēts"),
 
     ],
 
     activityTimeline: [
 
-      {
+      timeline("tl1", "14:05", "Requirements agent", "Intake analīze pabeigta", "Parsēts piegādātāju KPI pieprasījums"),
 
-        id: "tl1",
+      timeline("tl2", "14:12", "Requirements agent", "Entītiju kartēšana", "Purchase Header/Line, Vendor, Warehouse Receipt"),
 
-        time: "14:05",
+      timeline("tl3", "14:18", "Requirements agent", "KPI ieteikumi sagatavoti", "4 galvenie rādītāji ar aprēķinu loģiku"),
 
-        actor: "Requirements agent",
-
-        event: "Intake analīze pabeigta",
-
-        detail: "Parsēts piegādātāju KPI pieprasījums",
-
-      },
-
-      {
-
-        id: "tl2",
-
-        time: "14:12",
-
-        actor: "Requirements agent",
-
-        event: "Entītiju kartēšana",
-
-        detail: "Purchase Header/Line, Vendor, Warehouse Receipt",
-
-      },
-
-      {
-
-        id: "tl3",
-
-        time: "14:18",
-
-        actor: "Requirements agent",
-
-        event: "KPI ieteikumi sagatavoti",
-
-        detail: "4 galvenie rādītāji ar aprēķinu loģiku",
-
-      },
-
-      {
-
-        id: "tl4",
-
-        time: "14:22",
-
-        actor: "Orchestrator",
-
-        event: "Gate 1 evidence pack gatavs",
-
-        detail: "Gaida Reviewer apstiprinājumu",
-
-      },
+      timeline("tl4", "14:22", "Orchestrator", "Gate 1 evidence pack gatavs", "Gaida Reviewer apstiprinājumu"),
 
     ],
 
@@ -1507,65 +1090,15 @@ export const approvalGateDetails: Record<string, ApprovalGateDetail> = {
 
     evidence: [
 
-      {
+      evidence("e1", "dataSource", "Purchase Header / Line", "Pirkumu pasūtījumi ar Expected Receipt Date"),
 
-        id: "e1",
+      evidence("e2", "dataSource", "Vendor Ledger Entry", "Piegādātāju maksājumu un kavējumu konteksts"),
 
-        category: "dataSource",
+      evidence("e3", "kpi", "OTIF (On-Time In-Full)", "Laicīgi un pilnīgi piegādātie pasūtījumi / kopā"),
 
-        title: "Purchase Header / Line",
+      evidence("e4", "kpi", "Vidējais lead time", "Dienas no pasūtījuma līdz receipt"),
 
-        detail: "Pirkumu pasūtījumi ar Expected Receipt Date",
-
-      },
-
-      {
-
-        id: "e2",
-
-        category: "dataSource",
-
-        title: "Vendor Ledger Entry",
-
-        detail: "Piegādātāju maksājumu un kavējumu konteksts",
-
-      },
-
-      {
-
-        id: "e3",
-
-        category: "kpi",
-
-        title: "OTIF (On-Time In-Full)",
-
-        detail: "Laicīgi un pilnīgi piegādātie pasūtījumi / kopā",
-
-      },
-
-      {
-
-        id: "e4",
-
-        category: "kpi",
-
-        title: "Vidējais lead time",
-
-        detail: "Dienas no pasūtījuma līdz receipt",
-
-      },
-
-      {
-
-        id: "e5",
-
-        category: "openQuestion",
-
-        title: "Kvalitātes atteikumi",
-
-        detail: "Vai izmantot Return Order vai QC flag no BC?",
-
-      },
+      evidence("e5", "openQuestion", "Kvalitātes atteikumi", "Vai izmantot Return Order vai QC flag no BC?"),
 
     ],
 
@@ -1625,49 +1158,13 @@ export const approvalGateDetails: Record<string, ApprovalGateDetail> = {
 
       "Gate 1 apstiprināts — P&L struktūra un kontu hierarhija saskaņota ar klientu.",
 
-    decisionSummary: {
-
-      verdict: "approve_with_warning",
-
-      verdictLabel: "Apstiprināt ar brīdinājumu",
-
-      correctionCount: 1,
-
-      warningCount: 0,
-
-      blockerCount: 0,
-
-      summaryText:
-
-        "Validation un code-review sub-agenti pabeidza P&L plāna vs. fakta Solution pārbaudi. Veikts 1 GL kontu mapping labojums — variance aprēķini korekti pēc korekcijas. Q4 plāna dati vēl nav saņemti, bet YTD skats ir derīgs. Ieteicams apstiprināt Schwenk piegādei.",
-
-    },
+    decisionSummary: approveWithWarning("Validation un code-review sub-agenti pabeidza P&L plāna vs. fakta Solution pārbaudi. Veikts 1 GL kontu mapping labojums — variance aprēķini korekti pēc korekcijas. Q4 plāna dati vēl nav saņemti, bet YTD skats ir derīgs. Ieteicams apstiprināt Schwenk piegādei.", { correctionCount: 1 }),
 
     validationChecklist: [
 
-      {
+      checklist("vc1", "P&L struktūras validācija", "pass", "Kontu hierarhija 3 līmeņos, variance loģika pārbaudīta"),
 
-        id: "vc1",
-
-        label: "P&L struktūras validācija",
-
-        status: "pass",
-
-        detail: "Kontu hierarhija 3 līmeņos, variance loģika pārbaudīta",
-
-      },
-
-      {
-
-        id: "vc2",
-
-        label: "Plāna datu avots",
-
-        status: "pass",
-
-        detail: "Excel plāns importēts mock modelī — 12 mēneši",
-
-      },
+      checklist("vc2", "Plāna datu avots", "pass", "Excel plāns importēts mock modelī — 12 mēneši"),
 
       {
 
@@ -1681,45 +1178,15 @@ export const approvalGateDetails: Record<string, ApprovalGateDetail> = {
 
       },
 
-      {
+      checklist("vc4", "Variance aprēķini", "pass"),
 
-        id: "vc4",
-
-        label: "Variance aprēķini",
-
-        status: "pass",
-
-      },
-
-      {
-
-        id: "vc5",
-
-        label: "Plāna datu pilnīgums",
-
-        status: "pass_with_warning",
-
-        detail: "Q4 plāna dati vēl nav saņemti — rāda YTD līdz Q3",
-
-      },
+      checklist("vc5", "Plāna datu pilnīgums", "pass_with_warning", "Q4 plāna dati vēl nav saņemti — rāda YTD līdz Q3"),
 
     ],
 
     activityTimeline: [
 
-      {
-
-        id: "tl1",
-
-        time: "11:52",
-
-        actor: "Validation agent",
-
-        event: "Solution pārbaudes pabeigtas",
-
-        detail: "Variance loģika un kontu hierarhija validēta",
-
-      },
+      timeline("tl1", "11:52", "Validation agent", "Solution pārbaudes pabeigtas", "Variance loģika un kontu hierarhija validēta"),
 
       {
 
@@ -1735,33 +1202,9 @@ export const approvalGateDetails: Record<string, ApprovalGateDetail> = {
 
       },
 
-      {
+      timeline("tl3", "11:30", "Build agent", "Mock Solution ģenerēts", "P&L variance panelis ar 12 mēnešu plānu"),
 
-        id: "tl3",
-
-        time: "11:30",
-
-        actor: "Build agent",
-
-        event: "Mock Solution ģenerēts",
-
-        detail: "P&L variance panelis ar 12 mēnešu plānu",
-
-      },
-
-      {
-
-        id: "tl4",
-
-        time: "11:18",
-
-        actor: "Orchestrator",
-
-        event: "Gate 2 atvērts",
-
-        detail: "Gaida Reviewer apstiprinājumu pirms piegādes",
-
-      },
+      timeline("tl4", "11:18", "Orchestrator", "Gate 2 atvērts", "Gaida Reviewer apstiprinājumu pirms piegādes"),
 
     ],
 
@@ -1769,53 +1212,13 @@ export const approvalGateDetails: Record<string, ApprovalGateDetail> = {
 
     evidence: [
 
-      {
+      evidence("e1", "dataSource", "G/L Entry", "Faktiskie P&L dati no BC finanšu moduļa"),
 
-        id: "e1",
+      evidence("e2", "dataSource", "Budget Excel import", "Klienta plāns — mēneša granulācija, EUR"),
 
-        category: "dataSource",
+      evidence("e3", "kpi", "Variance (Plan vs Actual)", "Absolūtais un % novirze pa kontu grupām"),
 
-        title: "G/L Entry",
-
-        detail: "Faktiskie P&L dati no BC finanšu moduļa",
-
-      },
-
-      {
-
-        id: "e2",
-
-        category: "dataSource",
-
-        title: "Budget Excel import",
-
-        detail: "Klienta plāns — mēneša granulācija, EUR",
-
-      },
-
-      {
-
-        id: "e3",
-
-        category: "kpi",
-
-        title: "Variance (Plan vs Actual)",
-
-        detail: "Absolūtais un % novirze pa kontu grupām",
-
-      },
-
-      {
-
-        id: "e4",
-
-        category: "openQuestion",
-
-        title: "Eliminācijas ieraksti",
-
-        detail: "Konsolidācijas eliminācijas nav iekļautas — apzināts MVP scope",
-
-      },
+      evidence("e4", "openQuestion", "Eliminācijas ieraksti", "Konsolidācijas eliminācijas nav iekļautas — apzināts MVP scope"),
 
     ],
 
