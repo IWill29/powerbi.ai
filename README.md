@@ -2,13 +2,57 @@
 
 Platform for managing Power BI solution requests with AI agent orchestration and human-in-the-loop approval.
 
+**Repository:** https://github.com/IWill29/powerbi.ai
+
 ## Status
 
-**Phase 1 (MVP):** Documentation and project scaffold. Dashboard with mock agent pipeline.
+**Phase 1 (MVP):** Application scaffold in place — FastAPI backend, Next.js dashboard shell, PostgreSQL via Docker. Mock agent pipeline not yet implemented.
 
 ## Quick start
 
-Setup instructions will be added when the application scaffold is in place.
+### Prerequisites
+
+- Docker Desktop (PostgreSQL)
+- Python 3.11+
+- Node.js 20+
+
+### 1. Database
+
+```powershell
+docker compose up -d postgres
+copy .env.example .env
+```
+
+### 2. Backend (FastAPI)
+
+```powershell
+cd backend
+python -m venv .venv
+.venv\Scripts\activate
+pip install -e .
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
+
+Verify: http://localhost:8000/health → `{"status":"ok"}`
+
+### 3. Frontend (Next.js)
+
+```powershell
+cd frontend
+copy .env.local.example .env.local
+npm install
+npm run dev
+```
+
+Open http://localhost:3000
+
+## Project structure
+
+```
+backend/     FastAPI API (Phase 1 mock pipeline)
+frontend/    Next.js dashboard
+docs/        Architecture, ADRs, MVP spec
+```
 
 ## Documentation
 
@@ -22,7 +66,7 @@ Setup instructions will be added when the application scaffold is in place.
 
 ## Stack
 
-- Next.js 15, React 19, shadcn/ui, Tailwind v4
+- Next.js 16, React 19, shadcn/ui, Tailwind v4 *(AGENTS.md targets Next.js 15 — pin if strict alignment needed)*
 - FastAPI (Python)
-- LangGraph, Langfuse
+- LangGraph, Langfuse (Phase 2 orchestrator)
 - PostgreSQL
