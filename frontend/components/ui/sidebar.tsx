@@ -208,6 +208,7 @@ function SidebarProvider({
   return (
     <SidebarContext.Provider value={contextValue}>
       <div
+        suppressHydrationWarning
         data-slot="sidebar-wrapper"
         data-resizing={isResizing ? "" : undefined}
         style={
