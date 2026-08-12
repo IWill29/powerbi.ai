@@ -1,4 +1,4 @@
-﻿"""Application settings loaded from environment variables."""
+"""Application settings loaded from environment variables."""
 
 from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -19,6 +19,14 @@ class Settings(BaseSettings):
     api_host: str = "0.0.0.0"
     api_port: int = 8000
     cors_origins: list[str] = ["http://localhost:3000", "http://localhost:3001"]
+    seed_on_startup: bool = True
+    langfuse_public_key: str | None = None
+    langfuse_secret_key: str | None = None
+    langfuse_host: str = "https://cloud.langfuse.com"
+
+    @property
+    def langfuse_enabled(self) -> bool:
+        return bool(self.langfuse_public_key and self.langfuse_secret_key)
 
     @field_validator("cors_origins", mode="before")
     @classmethod
